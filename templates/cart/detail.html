@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Ваша корзина</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Товар</th>
+            <th>Количество</th>
+            <th>Удалить</th>
+            <th>Цена за единицу</th>
+            <th>Сумма</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in cart %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>
+                <form action="{% url 'cart:cart_add' item.product.id %}" method="post">
+                    {{ item.update_quantity_form.quantity }}
+                    {{ item.update_quantity_form.override }}
+                    <button type="submit" class="btn btn-sm">Обновить</button>
+                    {% csrf_token %}
+                </form>
+            </td>
+            <td>
+                <form action="{% url 'cart:cart_remove' item.product.id %}" method="post">
+                    <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                    {% csrf_token %}
+                </form>
+            </td>
+            <td>{{ item.price }} ₽</td>
+            <td>{{ item.total_price }} ₽</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td>Итого</td>
+            <td colspan="3"></td>
+            <td>{{ cart.get_total_price }} ₽</td>
+        </tr>
+    </tbody>
+</table>
+<p>
+    <a href="{% url 'shop:product_list' %}" class="btn">Продолжить покупки</a>
+    <a href="{% url 'orders:order_create' %}" class="btn">Оформить заказ</a>
+</p>
+{% endblock %}

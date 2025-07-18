@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Акционные товары | Аниме 360°{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Акционные товары</h1>
+        <p class="lead">Специальные предложения для наших клиентов</p>
+    </div>
+    
+    {% if offers %}
+        <div class="products-grid">
+            {% for offer in offers %}
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="{{ offer.product.image.url }}" alt="{{ offer.product.name }}">
+                        <div class="product-badge">-{{ offer.discount_percent }}%</div>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">{{ offer.product.name }}</h3>
+                        <p class="product-description">{{ offer.product.description|truncatechars:100 }}</p>
+                        
+                        <div class="price-container">
+                            <span class="product-price old-price">{{ offer.product.price }} ₽</span>
+                            <span class="product-price new-price">{{ offer.discounted_price|floatformat:2 }} ₽</span>
+                        </div>
+                        
+                        <div class="product-meta">
+                            <span>До {{ offer.end_date|date:"d.m.Y" }}</span>
+                            <span class="product-rating">
+                                <i class="fas fa-star"></i> 4.8
+                            </span>
+                        </div>
+                        
+                        <div class="product-actions">
+                            <form action="{% url 'cart:cart_add' offer.product.id %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn">
+                                    <i class="fas fa-cart-plus"></i> В корзину
+                                </button>
+                            </form>
+                            <a href="{{ offer.product.get_absolute_url }}" class="btn btn-accent">
+                                <i class="fas fa-info-circle"></i> Подробнее
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-offers">
+            <div class="icon">
+                <i class="fas fa-tag fa-4x"></i>
+            </div>
+            <h3>Сейчас нет активных акций</h3>
+            <p>Но у нас всегда есть что-то интересное в каталоге!</p>
+            <a href="{% url 'shop:product_list' %}" class="btn btn-primary">
+                <i class="fas fa-shopping-bag"></i> Перейти в каталог
+            </a>
+        </div>
+    {% endif %}
+{% endblock %}

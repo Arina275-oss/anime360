@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Новинки | Аниме 360°{% endblock %}
+
+{% block content %}
+<div class="new-arrivals">
+    <div class="header-banner bg-gradient-to-r from-purple-600 to-pink-500 text-white p-8 rounded-lg mb-8 text-center">
+        <h1 class="text-4xl font-bold mb-2"><i class="fas fa-star mr-3"></i>Новинки</h1>
+        <p class="text-xl opacity-90">Самые свежие добавления в нашем магазине</p>
+    </div>
+
+    {% if new_products %}
+    <div class="products-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for product in new_products %}
+        <div class="product-card bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 relative">
+            <!-- Бейдж "Новинка" -->
+            <div class="absolute top-2 left-2 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
+                NEW!
+            </div>
+            
+            <a href="{{ product.get_absolute_url }}" class="block">
+                <div class="product-image h-48 overflow-hidden">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-lg mb-2">{{ product.name }}</h3>
+                    <div class="flex justify-between items-center">
+                        <span class="text-purple-600 font-bold">
+                            {% if product.get_discount %}
+                                <span class="text-gray-400 line-through mr-2">{{ product.price }} ₽</span>
+                                {{ product.get_discount.discounted_price|floatformat:2 }} ₽
+                            {% else %}
+                                {{ product.price }} ₽
+                            {% endif %}
+                        </span>
+                        <span class="text-sm text-gray-500">
+                            Добавлено {{ product.created|date:"d.m.Y" }}
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state text-center py-12">
+        <i class="fas fa-box-open text-5xl text-gray-300 mb-4"></i>
+        <h3 class="text-xl font-semibold">Новых товаров пока нет</h3>
+        <p class="mt-2 mb-4">Скоро мы добавим новые аниме-товары!</p>
+        <a href="{% url 'shop:product_list' %}" class="btn inline-block">
+            <i class="fas fa-arrow-left mr-2"></i> Вернуться в магазин
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .header-banner {
+        background: linear-gradient(135deg, var(--primary), #ff6b6b);
+        box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+    }
+    
+    .products-grid {
+        display: grid;
+    }
+    
+    .grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+    .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+    
+    .gap-6 { gap: 1.5rem; }
+    
+    .product-card {
+        transition: all 0.3s ease;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .product-image img {
+        transition: transform 0.5s ease;
+    }
+    
+    .product-card:hover .product-image img {
+        transform: scale(1.05);
+    }
+    
+    .empty-state {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 12px;
+        padding: 2rem;
+    }
+</style>
+{% endblock %}

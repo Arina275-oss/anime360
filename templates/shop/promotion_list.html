@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Акции | Аниме 360°{% endblock %}
+
+{% block content %}
+<div class="promotions-container">
+    <h1>Текущие акции</h1>
+    
+    {% if promotions %}
+        <div class="promotions-grid">
+            {% for promotion in promotions %}
+                <div class="promotion-card">
+                    {% if promotion.image %}
+                        <div class="promotion-image">
+                            <img src="{{ promotion.image.url }}" alt="{{ promotion.title }}">
+                        </div>
+                    {% endif %}
+                    <div class="promotion-info">
+                        <h2><a href="{% url 'shop:promotion_detail' promotion.slug %}">{{ promotion.title }}</a></h2>
+                        <div class="promotion-discount">-{{ promotion.discount_percent }}%</div>
+                        <p class="promotion-dates">
+                            Действует с {{ promotion.start_date|date:"d.m.Y" }} по {{ promotion.end_date|date:"d.m.Y" }}
+                        </p>
+                        <a href="{% url 'shop:promotion_detail' promotion.slug %}" class="btn">Подробнее</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-promotions">
+            <p>В данный момент нет активных акций.</p>
+            <a href="{% url 'shop:product_list' %}" class="btn">Вернуться в каталог</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

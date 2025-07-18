@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}{{ promotion.title }} | Аниме 360°{% endblock %}
+
+{% block content %}
+<div class="promotion-detail-container">
+    <a href="{% url 'shop:promotion_list' %}" class="back-to-promotions">← Все акции</a>
+    
+    <div class="promotion-header">
+        {% if promotion.image %}
+            <div class="promotion-main-image">
+                <img src="{{ promotion.image.url }}" alt="{{ promotion.title }}">
+            </div>
+        {% endif %}
+        <div class="promotion-header-info">
+            <h1>{{ promotion.title }}</h1>
+            <div class="promotion-discount-big">-{{ promotion.discount_percent }}%</div>
+            <div class="promotion-dates">
+                <p>Действует с {{ promotion.start_date|date:"d.m.Y" }} по {{ promotion.end_date|date:"d.m.Y" }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="promotion-description">
+        {{ promotion.description|linebreaks }}
+    </div>
+    
+    <h2>Товары по акции</h2>
+    
+    {% if products %}
+        <div class="promotion-products-grid">
+            {% for product in products %}
+                <div class="promotion-product-card">
+                    <div class="product-image-container">
+                        <a href="{{ product.get_absolute_url }}">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="product-image" alt="{{ product.name }}">
+                            {% else %}
+                                <div class="no-image">Нет изображения</div>
+                            {% endif %}
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <h3><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
+                        <div class="price-section">
+                            <span class="old-price">{{ product.price }} ₽</span>
+                            <span class="new-price">
+                                {{ product.get_discounted_price|floatformat:2 }} ₽
+                            </span>
+                        </div>
+                        <form action="{% url 'cart:cart_add' product.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn">В корзину</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-products">
+            <p>В этой акции пока нет товаров.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
